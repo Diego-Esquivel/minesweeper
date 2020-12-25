@@ -3,6 +3,7 @@ import tkinter.simpledialog as sdg
 import tkinter.messagebox as mbx
 import tkinter.font as tkf
 import tkinter.filedialog as fdg
+import random as rnd
 import platform as pt
 import time
 import sys
@@ -14,6 +15,13 @@ base.title("Diego G Esquivel's Minesweeper Demo")
 base.resizable(False, False)
 
 buttonSaveTimes = [[0 for i in range(32)] for j in range(10)]
+
+rands =set()
+for r in range(0, 11):
+	number = rnd.randint(0, 32 * 10 - 1)
+	if rands.isdisjoint({number}):
+		rands.add(number)
+print(rands)
 
 # Fonts
 fontNormal = tkf.Font(family = "Consolas", size = 8)
@@ -30,9 +38,26 @@ for u in range(32):
 				buttonSaveTimes[c][u] = tk.Button(frameTimesScreen, text = "?", bd = 1, command = lambda row = c, col = u: checkSweeper(row, col), font = fontNormal, justify = 'center')
 				buttonSaveTimes[c][u].grid(row = c, column = u, columnspan = 1)
 
+def GameOver():
+	string = "Game Over"
+	for ctr in range(32): 
+		for ctr2 in range(10):
+			if rands.isdisjoint({ctr * ctr2 + ctr}) == False:
+				buttonSaveTimes = tk.Button(frameTimesScreen, text = "m", bd = 1, font = fontNormal, justify = 'center')
+				buttonSaveTimes.grid(row = ctr2, column = ctr, columnspan = 1)
+			else:			
+				buttonSaveTimes = tk.Button(frameTimesScreen, text = " ", bd = 1, font = fontNormal, justify = 'center')
+				buttonSaveTimes.grid(row = ctr2, column = ctr, columnspan = 1)
+	return string
+
 def checkSweeper(row_, column_):
-	buttonSaveTimes = tk.Button(frameTimesScreen, text = " ", bd = 1, command = lambda row = row_, column = column_: checkSweeper(row, column), font = fontNormal, justify = 'center')
-	buttonSaveTimes.grid(row = row_, column = column_, columnspan = 1)
+	if rands.isdisjoint({row_ * column_ + column_}) == False:
+		buttonSaveTimes = tk.Button(frameTimesScreen, text = "m", bd = 1, font = fontNormal, justify = 'center')
+		buttonSaveTimes.grid(row = row_, column = column_, columnspan = 1)
+		print(GameOver())
+	else:			
+		buttonSaveTimes = tk.Button(frameTimesScreen, text = " ", bd = 1, font = fontNormal, justify = 'center')
+		buttonSaveTimes.grid(row = row_, column = column_, columnspan = 1)
 	return 1
 
 frameMain = tk.LabelFrame(base, text="Sorting Panel", bd = 4, relief = "raised", font = fontTitle)
