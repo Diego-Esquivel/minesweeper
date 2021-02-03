@@ -34,29 +34,51 @@ frameTimesScreen = tk.Canvas(frameTimes, width = 800, height = 400)
 frameTimesScreen.pack(padx = 4, pady = 4)
 
 for u in range(32):
-			for c in range(10):
-				buttonSaveTimes[c][u] = tk.Button(frameTimesScreen, text = "?", bd = 1, command = lambda row = c, col = u: checkSweeper(row, col), font = fontNormal, justify = 'center')
-				buttonSaveTimes[c][u].grid(row = c, column = u, columnspan = 1)
+	for c in range(10):
+		buttonSaveTimes[c][u] = tk.Button(frameTimesScreen, text = "?", bd = 1, command = lambda row = c, col = u: checkSweeper(row, col), font = fontNormal, justify = 'center')
+		buttonSaveTimes[c][u].grid(row = c, column = u, columnspan = 1)
 
 def GameOver():
 	string = "Game Over"
 	for ctr in range(32): 
 		for ctr2 in range(10):
-			if rands.isdisjoint({ctr * ctr2 + ctr}) == False:
+			if rands.isdisjoint({32 * ctr2 + ctr}) == False:
 				buttonSaveTimes = tk.Button(frameTimesScreen, text = "m", bd = 1, font = fontNormal, justify = 'center')
 				buttonSaveTimes.grid(row = ctr2, column = ctr, columnspan = 1)
 			else:			
-				buttonSaveTimes = tk.Button(frameTimesScreen, text = " ", bd = 1, font = fontNormal, justify = 'center')
+				buttonSaveTimes = tk.Button(frameTimesScreen, text = function(ctr2, ctr), bd = 1, font = fontNormal, justify = 'center')
 				buttonSaveTimes.grid(row = ctr2, column = ctr, columnspan = 1)
 	return string
 
+def function(row_, column_):
+	count = 0
+	if rands.isdisjoint({row_ * 32 + (column_ + 1 if column_ + 1 <= 31 else 31)}) == False:
+		count += 1
+	if rands.isdisjoint({row_ * 32 + (column_ - 1 if column_ - 1 >= 0 else 0)}) == False:
+		count += 1
+	if rands.isdisjoint({(row_-1 if row_-1 >= 0 else 0) * 32 + column_}) == False:
+		count += 1
+	if rands.isdisjoint({(row_+1 if row_+1 <= 9 else 9) * 32 + column_}) == False:
+		count += 1
+	if rands.isdisjoint({(row_+1 if row_+1 <= 9 and column_ + 1 <= 31 else row_) * 32 + (column_ + 1 if column_ + 1 <= 31 and row_+1 <= 9 else column_)}) == False:
+		count += 1
+	if rands.isdisjoint({(row_+1 if row_+1 <= 9 and column_ - 1 >= 0 else row_) * 32 + (column_ - 1 if column_ - 1 >= 0 and row_+1 <= 9 else column_)}) == False:
+		count += 1
+	if rands.isdisjoint({(row_-1 if row_-1 >= 0 and column_ + 1 <= 31 else row_) * 32 + (column_ + 1 if column_ + 1 <= 31 and row_-1 >= 0 else column_)}) == False:
+		count += 1
+	if rands.isdisjoint({(row_-1 if row_-1 >= 0 and column_ - 1 >= 0 else row_) * 32 + (column_ - 1 if column_ - 1 >= 0 and row_-1 >= 0 else column_)}) == False:
+		count += 1
+	if count == 0:
+		return " "
+	return str(count)
+
 def checkSweeper(row_, column_):
-	if rands.isdisjoint({row_ * column_ + column_}) == False:
+	if rands.isdisjoint({row_ * 32 + column_}) == False:
 		buttonSaveTimes = tk.Button(frameTimesScreen, text = "m", bd = 1, font = fontNormal, justify = 'center')
 		buttonSaveTimes.grid(row = row_, column = column_, columnspan = 1)
 		print(GameOver())
 	else:			
-		buttonSaveTimes = tk.Button(frameTimesScreen, text = " ", bd = 1, font = fontNormal, justify = 'center')
+		buttonSaveTimes = tk.Button(frameTimesScreen, text = function(row_, column_), bd = 1, font = fontNormal, justify = 'center')
 		buttonSaveTimes.grid(row = row_, column = column_, columnspan = 1)
 	return 1
 
